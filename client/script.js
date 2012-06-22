@@ -47,7 +47,7 @@
 	//TODO: show ticker
 	$urlEntry.focus();
 
-	$.get('http://' + $urlEntry.val(), function(data){
+	$.get('http://localhost:3000/' + encodeURIComponent($urlEntry.val()), function(data){
 	    geojson.clearLayers();
 	    geojson.addGeoJSON(data);
 	    
