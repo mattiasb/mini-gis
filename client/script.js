@@ -20,42 +20,66 @@
 
     var map = L.TileJSON.createMap('map', osmTileJSON);
 
-    var $urlEntryModal = $('#url-entry-modal');
+
     var $urlEntry = $('#url-entry');
     $urlEntry.focus();
-
+    var $urlEntryModal = $('#url-entry-modal');
     $urlEntryModal.modal({backdrop: false});
-
     $urlEntryModal.on('show', function () {
 	$urlEntry.focus();
     });
 
+    var $errorModal = $('#error-modal');
+    $errorModal.modal({show: false});
+    var $errorModalMessage = $('#error-modal-message');
+
     var geojson = new L.GeoJSON();
+
     geojson.on('featureparse', function(e) {
-	if(e.properties) {
-	    var content = "";
-	    for(key in e.properties){
-		var val = e.properties[key];
-		content += "<dt>" + key + "</dt>";
-		content += "<dd>&nbsp;" + val + "</dd>";
-	    }
-	    e.layer.bindPopup("<dl class=\"dl-horizontal\">" + content + "</dl>");
+	var content = "";
+	for(key in e.properties){
+	    var val = e.properties[key];
+	    content += "<dt>" + key + "</dt>";
+	    content += "<dd>&nbsp;" + val + "</dd>";
+	}
+	if(content !== ""){
+	    e.layer.bindPopup("<dl class=\"dl-horizontal\">" 
+			      + content 
+			      + "</dl>");
+	} else {
+	    e.layer.options.clickable = false;
 	}
     });
 
     $('#url-entry-button').click(function(){
 	//TODO: show ticker
 	$urlEntry.focus();
-
-	$.get('http://localhost:3000/' + encodeURIComponent($urlEntry.val()), function(data){
+	var url = 'http://localhost:3000/' 
+	    + encodeURIComponent($urlEntry.val());
+	$.get(url, function(data){
 	    geojson.clearLayers();
-	    geojson.addGeoJSON(data);
-	    
-	    map.fitBounds(geojson.getBounds());
-	    map.addLayer(geojson);
-	    
-	    //TODO: hide ticker
-	    //$urlEntryModal.modal('hide');
+	    if(data.type === "Error") {
+		showError("Data fetch error!", error);
+	    } else {
+		try {
+		    geojson.addGeoJSON(data);
+		    map.fitBounds(geojson.getBounds());
+		    map.addLayer(geojson);
+		    //TODO: hide ticker
+		    //$urlEntryModal.modal('hide');
+		} catch(error) {
+		    showError("Parse error!", error);
+		}
+	    }
+	}).error(function(data){
+	    console.log(data);
 	});
     });
+
+    function showError(header, message){
+	$errorModalHeader.text(header);
+	$errorModalMessage.text(messsage);
+	$errorModal.modal('show');
+    }
+
 })();

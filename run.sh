@@ -1,3 +1,6 @@
 #!/bin/bash
+
+BROWSER="google-chrome --app="
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-google-chrome "--app=file://${DIR}/client/index.html"
+${BROWSER}"file://${DIR}/client/index.html"

@@ -14,3 +14,10 @@ html, body {
 }
 
 
+.modal > .alert {
+    margin-bottom: 0px;
+}
+
+.navbar-search{
+    margin-top:0px!important
+}

@@ -10,6 +10,8 @@ if ( port === NaN) {
     port = 8080;
 }
 
+console.log("starting server");
+
 http.createServer(function(req, res) {
     var tmpUrl = 'http://' + decodeURIComponent(req.url.slice(1));
     console.log("fetching from: " + tmpUrl);
@@ -33,7 +35,8 @@ http.createServer(function(req, res) {
 	res.writeHead(pres.statusCode, pres.headers);
     }).on('error', function(e) {
 	console.log("got error:" + JSON.stringify(e));
-	res.writeHead(404);
+	res.write(JSON.stringify({type:"Error", message: e}));
+	res.writeHead(404, {'Access-Control-Allow-Origin' : '*'});
 	res.end();
     });
 }).listen(port);
