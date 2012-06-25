@@ -67,7 +67,7 @@
 					//TODO: hide ticker
 					//$urlEntryModal.modal('hide');
 				} catch(error) {
-					showError("Parse error!", error);
+					showError("Parse error!", error.message);
 				}
 			}
 		}).error(function(data){
