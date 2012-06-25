@@ -77,7 +77,7 @@
 
     function showError(header, message){
 		$errorModalHeader.text(header);
-		$errorModalMessage.text(messsage);
+		$errorModalMessage.text(message);
 		$errorModal.modal('show');
     }
 
