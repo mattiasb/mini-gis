@@ -1,0 +1,20 @@
+{
+  "author": "Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>",
+  "name": "geojson-viewer",
+  "description": "Fetch and show GeoJSON data on a map.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/moonlite/geojson-viewer",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/moonlite/geojson-viewer.git"
+  },
+  "main": "server.js",
+  "engines": {
+    "node": "~0.6.6"
+  },
+  "dependencies": {
+	  "express": "~2.5.10",
+	  "request": "~2.9.202"
+  },
+  "devDependencies": {}
+}
