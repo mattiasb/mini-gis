@@ -20,21 +20,31 @@
 
     var map = L.TileJSON.createMap('map', osmTileJSON);
 
-
     var $urlEntry = $('#url-entry');
     $urlEntry.focus();
-    var $urlEntryModal = $('#url-entry-modal');
-    $urlEntryModal.modal({backdrop: false});
-    $urlEntryModal.on('show', function () {
-		$urlEntry.focus();
+	$urlEntry.keyup(function(e){
+		if(e.which == 13){ // ENTER
+			fetch();
+		}
+		if(e.keyCode == 27){ // ESC
+			$urlEntry.blur();
+		}
     });
+	$(document).keyup(function(e) {
+		if(e.which == 76){ // 'L'
+			$urlEntry.focus();
+		}
+	});
+
+    $('#url-entry-button').click(fetch);
 
     var $errorModal = $('#error-modal');
     $errorModal.modal({show: false});
+
     var $errorModalMessage = $('#error-modal-message');
 	var $errorModalHeader = $('#error-modal-header');
-    var geojson = new L.GeoJSON();
 
+    var geojson = new L.GeoJSON();
     geojson.on('featureparse', function(e) {
 		var content = "";
 		for(key in e.properties){
@@ -51,34 +61,33 @@
 		}
     });
 
-    $('#url-entry-button').click(function(){
+	function fetch(){
 		//TODO: show ticker
-		$urlEntry.focus();
 		var url = 'proxy/' + encodeURIComponent($urlEntry.val());
-		$.get(url, function(data){
+		$.getJSON(url, function(data){
+			$urlEntry.val('');
 			geojson.clearLayers();
 			if(data.type === "Error") {
-				showError("Data fetch error!", error);
+				showError("Data fetch error!", data.message);
 			} else {
 				try {
 					geojson.addGeoJSON(data);
 					map.fitBounds(geojson.getBounds());
 					map.addLayer(geojson);
 					//TODO: hide ticker
-					//$urlEntryModal.modal('hide');
 				} catch(error) {
 					showError("Parse error!", error.message);
 				}
 			}
-		}).error(function(data){
-			console.log(data);
+		}).error(function(jqXHR, textStatus, error){
+			showError(textStatus, error.message);
 		});
-    });
+	}
 
     function showError(header, message){
 		$errorModalHeader.text(header);
 		$errorModalMessage.text(message);
 		$errorModal.modal('show');
     }
-
 })();
+
