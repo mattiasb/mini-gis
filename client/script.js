@@ -22,7 +22,7 @@
 
     var $urlEntry = $('#url-entry');
     $urlEntry.focus();
-	$urlEntry.keyup(function(e){
+    $urlEntry.keyup(function(e){
 		if(e.which == 13){ // ENTER
 			fetch();
 		}
@@ -30,9 +30,14 @@
 			$urlEntry.blur();
 		}
     });
-	$(document).keyup(function(e) {
+    $(document).keyup(function(e) {
 		if(e.which == 76){ // 'L'
 			$urlEntry.focus();
+		}
+    });
+	$urlEntry.bind('input propertychange', function() {
+		if(this.value.slice(0,7) === 'http://'){
+			this.value = this.value.slice(7);
 		}
 	});
 
@@ -42,7 +47,7 @@
     $errorModal.modal({show: false});
 
     var $errorModalMessage = $('#error-modal-message');
-	var $errorModalHeader = $('#error-modal-header');
+    var $errorModalHeader = $('#error-modal-header');
 
     var geojson = new L.GeoJSON();
     geojson.on('featureparse', function(e) {
@@ -61,7 +66,7 @@
 		}
     });
 
-	function fetch(){
+    function fetch(){
 		//TODO: show ticker
 		var url = 'proxy/' + encodeURIComponent($urlEntry.val());
 		$.getJSON(url, function(data){
@@ -82,7 +87,7 @@
 		}).error(function(jqXHR, textStatus, error){
 			showError(textStatus, error.message);
 		});
-	}
+    }
 
     function showError(header, message){
 		$errorModalHeader.text(header);
