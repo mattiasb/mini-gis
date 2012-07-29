@@ -1,7 +1,7 @@
 var second = 60;
 
 var express = require('express');
-var request = require('request').defaults({ timeout: 60*10 });
+var request = require('request');
 var helpers = require('./helpers');
 
 var app = express.createServer();

@@ -1,10 +1,10 @@
 exports.decodeUrl = function(url){
-    var ret = decodeURIComponent(url);
-    if(ret.slice(0, 7) === 'http://'){
+	var ret = decodeURIComponent(url);
+	if(ret.slice(0, 7) === 'http://'){
 		return ret;
-    } else {
+	} else {
 		return 'http://' + ret;
-    }
+	}
 }
 
 exports.handleError = function(res, message){
