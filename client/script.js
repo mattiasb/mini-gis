@@ -68,8 +68,11 @@
 
     function fetch(){
 		//TODO: show ticker
-		var url = 'proxy/' + encodeURIComponent($urlEntry.val());
-		$.getJSON(url, function(data){
+		var opt = {
+			url:    'http://' + $urlEntry.val(),
+			method: "GET"
+		}
+		$.post('proxy/', opt, function(data){
 			$urlEntry.val('');
 			geojson.clearLayers();
 			if(data.type === "Error") {
@@ -84,7 +87,7 @@
 					showError("Parse error!", error.message);
 				}
 			}
-		}).error(function(jqXHR, textStatus, error){
+		},"json").error(function(jqXHR, textStatus, error){
 			showError(textStatus, error.message);
 		});
     }

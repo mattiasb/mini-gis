@@ -1,23 +1,30 @@
 var second = 60;
 
 var express = require('express');
+var connect = require('connect');
 var request = require('request');
+var check = require('validator').check;
 var helpers = require('./helpers');
-
 var app = express.createServer();
 
+app.use(express.bodyParser());
 app.use(app.router);
 app.use(express.static(__dirname + "/client"));
 
-app.get('/proxy/:url', function(req, res, next){
-	var url = helpers.decodeUrl(req.params.url);
-	console.log('got request for ' + url);
+app.post('/proxy/', function(req, res, next){
+	console.log("body: " + JSON.stringify(req.body));
+	if(	helpers.validate(req, res)){
+		console.log('got request for ' + req.body.url);
 
-	// "http://a.bc".length === 11
-	if(url.length < 11){
-		helpers.handleError(res, "Invalid URL!");
-	} else {
-		var response = request.get(url);
+		var options = {
+			url:    req.body.url,
+			method: req.body.method
+		};
+		if(req.body.method === "POST"){
+			// TODO: Support for other body types
+			options.json = req.body.body
+		}
+		var response = request(options);
 		response.on('error', function(e) { 
 			helpers.handleError(res, e.message);
 		});
