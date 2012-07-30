@@ -14,7 +14,8 @@
   },
   "dependencies": {
 	  "express": "~2.5.10",
-	  "request": "~2.9.202"
+	  "request": "~2.9.202",
+	  "validator": "0.4.x"
   },
   "devDependencies": {}
 }
