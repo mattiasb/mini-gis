@@ -60,10 +60,10 @@
 			}
 			if(content !== ""){
 				layer.bindPopup("<dl class=\"dl-horizontal\">" 
-								  + content 
-								  + "</dl>");
+								+ content 
+								+ "</dl>");
 			} else {
-				layer.options.clickable = false;
+				setClickable(layer, false);
 			}
 		}
 	});
@@ -99,5 +99,15 @@
 		$errorModalMessage.text(message);
 		$errorModal.modal('show');
     }
+	
+	function setClickable(layer, bool){
+		if($.isFunction(layer.eachLayer)) {
+			layer.eachLayer(function (l) {
+				setClickable(l, bool);
+			});
+		} else {
+			layer.options.clickable = bool;
+		}
+	}
 })();
 
