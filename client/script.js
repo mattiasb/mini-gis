@@ -49,22 +49,24 @@
     var $errorModalMessage = $('#error-modal-message');
     var $errorModalHeader = $('#error-modal-header');
 
-    var geojson = new L.GeoJSON();
-    geojson.on('featureparse', function(e) {
-		var content = "";
-		for(key in e.properties){
-			var val = e.properties[key];
-			content += "<dt>" + key + "</dt>";
-			content += "<dd>&nbsp;" + val + "</dd>";
+
+    var geojson = new L.GeoJSON(null, {
+		onEachFeature: function (feature, layer) {
+			var content = "";
+			for(key in feature.properties){
+				var val = feature.properties[key];
+				content += "<dt>" + key + "</dt>";
+				content += "<dd>&nbsp;" + val + "</dd>";
+			}
+			if(content !== ""){
+				layer.bindPopup("<dl class=\"dl-horizontal\">" 
+								  + content 
+								  + "</dl>");
+			} else {
+				layer.options.clickable = false;
+			}
 		}
-		if(content !== ""){
-			e.layer.bindPopup("<dl class=\"dl-horizontal\">" 
-							  + content 
-							  + "</dl>");
-		} else {
-			e.layer.options.clickable = false;
-		}
-    });
+	});
 
     function fetch(){
 		//TODO: show ticker
@@ -79,7 +81,7 @@
 				showError("Data fetch error!", data.message);
 			} else {
 				try {
-					geojson.addGeoJSON(data);
+					geojson.addData(data);
 					map.fitBounds(geojson.getBounds());
 					map.addLayer(geojson);
 					//TODO: hide ticker
