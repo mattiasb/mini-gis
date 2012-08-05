@@ -1,7 +1,6 @@
 var second = 60;
 
 var express = require('express');
-var connect = require('connect');
 var request = require('request');
 var check = require('validator').check;
 var helpers = require('./helpers');
