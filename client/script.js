@@ -1,5 +1,4 @@
 (function(){
-
     var osmTileJSON = {    
 		"tilejson": "2.0.0"
 		, "name": "OpenStreetMap"
@@ -49,8 +48,7 @@
     var $errorModalMessage = $('#error-modal-message');
     var $errorModalHeader = $('#error-modal-header');
 
-
-    var geojson = new L.GeoJSON(null, {
+    var geojson = new L.GeoJSONProj(null, {
 		onEachFeature: function (feature, layer) {
 			var content = "";
 			for(key in feature.properties){
@@ -81,10 +79,11 @@
 				showError("Data fetch error!", data.message);
 			} else {
 				try {
-					geojson.addData(data);
-					map.fitBounds(geojson.getBounds());
-					map.addLayer(geojson);
-					//TODO: hide ticker
+					geojson.addData(data, function(){
+						map.fitBounds(geojson.getBounds());
+						map.addLayer(geojson);
+						//TODO: hide ticker
+					});
 				} catch(error) {
 					showError("Parse error!", error.message);
 				}
@@ -109,5 +108,6 @@
 			layer.options.clickable = bool;
 		}
 	}
+
 })();
 
