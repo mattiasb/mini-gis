@@ -48,7 +48,7 @@
     var $errorModalMessage = $('#error-modal-message');
     var $errorModalHeader = $('#error-modal-header');
 
-    var geojson = new L.GeoJSONProj(null, {
+    var geojson = new L.GeoJSON(null, {
 		onEachFeature: function (feature, layer) {
 			var content = "";
 			for(key in feature.properties){
@@ -79,7 +79,7 @@
 				showError("Data fetch error!", data.message);
 			} else {
 				try {
-					geojson.addData(data, function(){
+					addGeojson(data, function(){
 						map.fitBounds(geojson.getBounds());
 						map.addLayer(geojson);
 						//TODO: hide ticker
@@ -109,5 +109,38 @@
 		}
 	}
 
+	function addGeojson(data, cb){
+		if(typeof(data.crs) === 'object'){
+			createSource(data.crs, function(src){
+				geojson.addData(data, function(lat, lng){
+					var p = Proj4js.transform(src, Proj4js.WGS84, {x: lat, y: lng});
+					return new L.LatLng(p.y, p.x, true);
+				});
+				if(cb){
+					cb();
+				}
+			});
+		} else {
+			geojson.addData(data);
+			if(cb){
+				cb();
+			}
+		}
+	}
+
+	function createSource(crs, cb){
+		switch(crs.type){
+		case 'name':
+			// TODO: handle URN's
+			return new Proj4js.Proj(crs.properties.name, cb);
+		case 'link':
+			// TODO: support this!
+			throw "Not Supported!";
+			break;
+		case 'EPSG': // support for non-standard behaviour of GeoServer
+			return new Proj4js.Proj('EPSG:' + crs.properties.code, cb);
+		}
+		throw "Not Supported!";
+	}
 })();
 
