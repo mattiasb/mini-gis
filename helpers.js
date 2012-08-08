@@ -18,7 +18,7 @@
 
 	exports.validate = function(req, res){
 		try {
-			check(req.body.url).isUrl();
+			// check(req.body.url).isUrl();
 			check(req.body.method).isIn(["GET","POST"]);
 			return true;
 		} catch (msg) {
