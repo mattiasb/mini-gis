@@ -1,15 +1,6 @@
 (function(){
 	var check = require('validator').check;
 
-	// exports.decodeUrl = function(url){
-	// 	var ret = decodeURIComponent(url);
-	// 	if(ret.slice(0, 7) === 'http://'){
-	// 		return ret;
-	// 	} else {
-	// 		return 'http://' + ret;
-	// 	}
-	// }
-
 	exports.handleError = function(res, msg){
 		console.log(msg);
 		res.write(JSON.stringify({type: "Error", message: msg}));
