@@ -1,4 +1,21 @@
 (function(){
+
+	////// XHR Proxy
+
+	Proxy = {
+		get: function(url, cb){
+			return Proxy.call(url, "GET", cb);
+		},
+		post: function(url, cb){ 
+			return Proxy.call(url, "POST", cb);
+		},
+		call: function(url, method, cb){
+			return $.post('proxy/', {url: url, method: method}, cb);
+		}
+	}
+
+	///// MAP
+
     var osmTileJSON = {    
 		"tilejson": "2.0.0"
 		, "name": "OpenStreetMap"
@@ -18,6 +35,8 @@
     };
 
     var map = L.TileJSON.createMap('map', osmTileJSON);
+
+	//// Setup DOM
 
     var $urlEntry = $('#url-entry');
     $urlEntry.focus();
@@ -48,6 +67,9 @@
     var $errorModalMessage = $('#error-modal-message');
     var $errorModalHeader = $('#error-modal-header');
 
+
+	///// Leaflet GeoJSON support
+
     var geojson = new L.GeoJSON(null, {
 		onEachFeature: function (feature, layer) {
 			var content = "";
@@ -66,13 +88,21 @@
 		}
 	});
 
+	function setClickable(layer, bool){
+		if($.isFunction(layer.eachLayer)) {
+			layer.eachLayer(function (l) {
+				setClickable(l, bool);
+			});
+		} else {
+			layer.options.clickable = bool;
+		}
+	}
+
+	///// Fetch methods
+
     function fetch(){
 		//TODO: show ticker
-		var opt = {
-			url:    'http://' + $urlEntry.val(),
-			method: "GET"
-		}
-		$.post('proxy/', opt, function(data){
+		Proxy.get('http://' + $urlEntry.val(), function(data){
 			$urlEntry.val('');
 			geojson.clearLayers();
 			if(data.type === "Error") {
@@ -99,48 +129,88 @@
 		$errorModal.modal('show');
     }
 	
-	function setClickable(layer, bool){
-		if($.isFunction(layer.eachLayer)) {
-			layer.eachLayer(function (l) {
-				setClickable(l, bool);
-			});
-		} else {
-			layer.options.clickable = bool;
-		}
-	}
-
 	function addGeojson(data, cb){
-		if(typeof(data.crs) === 'object'){
+		if(validateCRS(data.crs)){
 			createSource(data.crs, function(src){
 				geojson.addData(data, function(lat, lng){
 					var p = Proj4js.transform(src, Proj4js.WGS84, {x: lat, y: lng});
 					return new L.LatLng(p.y, p.x, true);
 				});
-				if(cb){
-					cb();
-				}
+				cb && cb();
 			});
 		} else {
 			geojson.addData(data);
-			if(cb){
-				cb();
-			}
+			cb && cb();
 		}
 	}
 
+	///// Projections
+
 	function createSource(crs, cb){
 		switch(crs.type){
-		case 'name':
-			// TODO: handle URN's
-			return new Proj4js.Proj(crs.properties.name, cb);
-		case 'link':
-			// TODO: support this!
-			throw "Not Supported!";
-			break;
-		case 'EPSG': // support for non-standard behaviour of GeoServer
-			return new Proj4js.Proj('EPSG:' + crs.properties.code, cb);
+		// Standard GeoJSON
+		case 'name': return new Proj4js.Proj(crs.properties.name, cb);
+		case 'link': return projFromLink( crs.properties.type
+										, crs.properties.href
+										, cb);
+		// Non-standard GeoServer behaviour
+		case 'EPSG': return new Proj4js.Proj('EPSG:' + crs.properties.code, cb);
 		}
-		throw "Not Supported!";
+	}
+
+	function projFromLink(type, url, cb){
+		Proxy.get(url, function(def){
+			if(type === "proj4"){
+				// A horrible horrible hack, but proj4js really really sucks
+				var tmpName = "TMP-" + Math.random().toString().slice(2);
+				Proj4js.defs[tmpName] = def;
+				return new Proj4js.Proj(tmpName, function(proj){
+					delete Proj4js.defs[tmpName];
+					cb && cb(proj);
+				});
+			} else if(type === "proj4js"){
+				return new Proj4js.Proj(/[^"]*"([^"]*)"/.exec(def)[1], cb);
+			} else { // wkt
+				return new Proj4js.Proj(def, cb);
+			}
+		}).error(function(){
+			throw "Couldn't fetch proj definition (" + type + ") from [" + url + "]";
+		});
+	}
+
+	function validateCRS(crs){
+		if(typeof(crs) === "undefined" || crs === null){
+			return false;
+		}
+
+		if(  typeof(crs)            !== "object" 
+		  || typeof(crs.type)       !== "string" 
+		  || typeof(crs.properties) !== "object" ){
+			throw "Malformed CRS object";
+		}
+
+		switch(crs.type){
+
+		// Standard GeoJSON
+		case 'name': 
+			if(  typeof(crs.properties.type) !== "string" ){
+				throw "Malformed CRS object";
+			}
+			break;
+		case 'link':
+			var type = crs.properties.type.toLowerCase();
+			if(!(type === "proj4" || type === "proj4js" ||  /wkt/.test(type))){
+				throw "Malformed CRS object (CRS link type '" + crs.properties.type +"' not supported!";
+			}
+			break;
+
+		// Non-standard GeoServer behaviour
+		case 'EPSG': break;
+			
+		default:
+			throw "Malformed CRS object (CRS type '" + crs.type  + "' not supported)";
+		}
+		return true;
 	}
 })();
 
