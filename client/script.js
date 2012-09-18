@@ -36,6 +36,11 @@
 
     var map = L.TileJSON.createMap('map', osmTileJSON);
 
+/*	map.addControl(new L.Control.Form({
+		name: { type: "text", label: "Name" },
+		passw: { type: "password", label: "Password" },
+	})); */
+
 	//// Setup spinner
 	var $spinner = $('#spinner');
 	var blah = new Spinner({
