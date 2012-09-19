@@ -35,8 +35,11 @@
     };
 
 	var formControl = new L.Control.Form({
-		name: { type: "text", label: "Name" },
+		name: { type: "text", label: "Name", value: "pelle"},
 		passw: { type: "textarea", label: "Password" },
+		age: { type: "select", label: "Age", value: 7, options: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15] }
+	}, { 
+		header: "Form!" 
 	});
 	formControl.on('submit', function(e){
 		console.log(e.data.name);

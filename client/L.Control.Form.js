@@ -1,12 +1,9 @@
 /*
   TODO:
   * Support for 
-    - select fields
-    - setting a header / legend
-	- setting the submit button text
 	- expanding and collapsing the form
-	- forcing the form to never collapse
-	- setting the forms initial state to expanded
+	  - forcing the form to never collapse
+	  - setting the forms initial state to expanded
   * Style the form
 */
 L.Control.Form = L.Control.extend({
@@ -14,7 +11,9 @@ L.Control.Form = L.Control.extend({
 
 	options: {
 		position: 'topright',
-		showLabels: false
+		showLabels: false,
+		submitLabel: "Ok",
+		header: undefined
 	},
 
 	initialize: function(formDef, options){
@@ -46,17 +45,24 @@ L.Control.Form = L.Control.extend({
 	}, 
 	
 	_initForm: function(){
-		var form = this._form = L.DomUtil.create('form', "");
+		var form = this._form = L.DomUtil.create('form', "")
+		,   fieldset = L.DomUtil.create('fieldset', "", form);
 		
+		if(this.options.header){
+			L.DomUtil
+				.create('legend', "", fieldset)
+				.appendChild(document.createTextNode(this.options.header));
+		}
+
 		// Build up form
 		for(var name in this._formDef){
 			var fieldDef = this._formDef[name];
-			this._createLabel(name, fieldDef.label, form);
-			var field = this._createField(name, fieldDef      , form);
+			this._createLabel(name, fieldDef.label, fieldset);
+			var field = this._createField(name, fieldDef , fieldset);
 			this._fields.push(field);
 		}
 		
-		this._createField("submit", {type: "submit", value:"Ok"}, form);
+		this._createField("submit", {type: "submit", value: this.options.submitLabel}, fieldset);
 
 		L.DomEvent.on(form, 'submit', this._submit, this);
 		return form;
@@ -79,7 +85,18 @@ L.Control.Form = L.Control.extend({
 			}
 			break;
 		case "select":
-			throw new Error("No support for selects yet!");
+			field = L.DomUtil.create('select', "", container);
+			var opt = L.DomUtil.create('option', "", field);
+			opt.appendChild(document.createTextNode(def.label));
+			for(var key in def.options){
+				opt = L.DomUtil.create('option', "", field);
+				opt.setAttribute('value', key);
+				if(key == def.value){
+					opt.setAttribute('selected',"");
+				}
+				opt.appendChild(document.createTextNode(def.options[key]));
+			}
+			break;
 		default:
 			field = L.DomUtil.create('input', "", container);
 			field.setAttribute('type', def.type);
