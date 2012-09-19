@@ -11,7 +11,7 @@
   * Style the form
 */
 L.Control.Form = L.Control.extend({
-	include: L.Mixin.Events,
+	includes: L.Mixin.Events,
 
 	options: {
 		position: 'topright',
@@ -47,7 +47,7 @@ L.Control.Form = L.Control.extend({
 	}, 
 	
 	_initForm: function(){
-		var form = this._form = L.DomUtil.create('form');
+		var form = this._form = L.DomUtil.create('form', "");
 		
 		// Build up form
 		for(var name in this._formDef){
@@ -58,7 +58,7 @@ L.Control.Form = L.Control.extend({
 		
 		this._createField("submit", {type: "submit", value:"Ok"}, form);
 
-		L.DomEvent.on(form, 'submit', this._submit);
+		L.DomEvent.on(form, 'submit', this._submit, this);
 		return form;
 	},
 
@@ -73,7 +73,7 @@ L.Control.Form = L.Control.extend({
 		
 		switch(def.type){
 		case "textarea":
-			field = L.DomUtil.create('textarea', undefined, container);
+			field = L.DomUtil.create('textarea', "", container);
 			if(def.value){
 				field.appendChild(document.createTextNode(def.value));
 			}
@@ -81,7 +81,7 @@ L.Control.Form = L.Control.extend({
 		case "select":
 			throw new Error("No support for selects yet!");
 		default:
-			field = L.DomUtil.create('input', undefined, container);
+			field = L.DomUtil.create('input', "", container);
 			field.setAttribute('type', def.type);
 			if(def.value){
 				field.setAttribute('value', def.value);
@@ -91,11 +91,13 @@ L.Control.Form = L.Control.extend({
 		field.setAttribute('name', name);
 	},
 
-	_submit: function(){
-		var data = {};
+	_submit: function(e){
+		L.DomEvent.stop(e);
+		var data = {test:"lol"};
 
 		// Collect data
 		
 		this.fire('submit', data);
+		return false;
 	}
 });
