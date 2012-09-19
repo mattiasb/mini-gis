@@ -1,6 +1,5 @@
 /*
   TODO:
-  * Collect the data and return with the submit-event
   * Support for 
     - select fields
     - setting a header / legend
@@ -24,10 +23,10 @@ L.Control.Form = L.Control.extend({
 	},
 	
 	onAdd: function(map){
+		this._fields = [];
 		return this._initLayout();
-		
 	},
-	
+
 	_initLayout: function(){
 		var className = 'leaflet-control-form'
 		,   container = L.DomUtil.create('div', className);
@@ -53,7 +52,8 @@ L.Control.Form = L.Control.extend({
 		for(var name in this._formDef){
 			var fieldDef = this._formDef[name];
 			this._createLabel(name, fieldDef.label, form);
-			this._createField(name, fieldDef      , form);
+			var field = this._createField(name, fieldDef      , form);
+			this._fields.push(field);
 		}
 		
 		this._createField("submit", {type: "submit", value:"Ok"}, form);
@@ -89,15 +89,20 @@ L.Control.Form = L.Control.extend({
 		}
 		field.setAttribute('placeholder', def.label);
 		field.setAttribute('name', name);
+		return field;
 	},
 
 	_submit: function(e){
+		var data = { }, i;
 		L.DomEvent.stop(e);
-		var data = {test:"lol"};
 
 		// Collect data
+		for(i=0; i < this._fields.length; i++){
+			var field = this._fields[i];
+			data[field.name] = field.value;
+		}
 		
-		this.fire('submit', data);
+		this.fire('submit', { data:data } );
 		return false;
 	}
 });

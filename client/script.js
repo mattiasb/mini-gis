@@ -38,9 +38,9 @@
 		name: { type: "text", label: "Name" },
 		passw: { type: "textarea", label: "Password" },
 	});
-	formControl.on('submit', function(data){
-		
-		console.log(data.test);
+	formControl.on('submit', function(e){
+		console.log(e.data.name);
+		console.log(e.data.passw);
 	});
 
     var map = L.TileJSON.createMap('map', osmTileJSON);
