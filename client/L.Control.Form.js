@@ -1,6 +1,6 @@
 /*
   TODO:
-  * Support for 
+  * Support for
 	- expanding and collapsing the form
 	  - forcing the form to never collapse
 	  - setting the forms initial state to expanded
@@ -20,7 +20,7 @@ L.Control.Form = L.Control.extend({
 		L.Util.setOptions(this, options);
 		this._formDef = formDef;
 	},
-	
+
 	onAdd: function(map){
 		this._fields = [];
 		return this._initLayout();
@@ -29,25 +29,25 @@ L.Control.Form = L.Control.extend({
 	_initLayout: function(){
 		var className = 'leaflet-control-form'
 		,   container = L.DomUtil.create('div', className);
-		
-		this._labelClassName = className + '-label' 
+
+		this._labelClassName = className + '-label'
 			+ (this.options.showLabels ? '' : ' hidden');
 
 		if (!L.Browser.touch) {
-            L.DomEvent.disableClickPropagation(container);
-        } else {
-            L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
-        }
+			L.DomEvent.disableClickPropagation(container);
+		} else {
+			L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
+		}
 
-        container.appendChild(this._initForm());
+		container.appendChild(this._initForm());
 
 		return container;
-	}, 
-	
+	},
+
 	_initForm: function(){
 		var form = this._form = L.DomUtil.create('form', "")
 		,   fieldset = L.DomUtil.create('fieldset', "", form);
-		
+
 		if(this.options.header){
 			L.DomUtil
 				.create('legend', "", fieldset)
@@ -61,8 +61,10 @@ L.Control.Form = L.Control.extend({
 			var field = this._createField(name, fieldDef , fieldset);
 			this._fields.push(field);
 		}
-		
-		this._createField("submit", {type: "submit", value: this.options.submitLabel}, fieldset);
+
+		this._createField("submit"
+						  , {type: "submit", value: this.options.submitLabel}
+						  , fieldset);
 
 		L.DomEvent.on(form, 'submit', this._submit, this);
 		return form;
@@ -76,7 +78,7 @@ L.Control.Form = L.Control.extend({
 
 	_createField: function(name, def, container){
 		var field;
-		
+
 		switch(def.type){
 		case "textarea":
 			field = L.DomUtil.create('textarea', "", container);
@@ -118,7 +120,7 @@ L.Control.Form = L.Control.extend({
 			var field = this._fields[i];
 			data[field.name] = field.value;
 		}
-		
+
 		this.fire('submit', { data:data } );
 		return false;
 	}
