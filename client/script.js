@@ -6,17 +6,17 @@
 		get: function(url, cb){
 			return Proxy.call(url, "GET", cb);
 		},
-		post: function(url, cb){ 
+		post: function(url, cb){
 			return Proxy.call(url, "POST", cb);
 		},
 		call: function(url, method, cb){
 			return $.post('proxy/', {url: url, method: method}, cb);
 		}
-	}
+	};
 
 	///// MAP
 
-    var osmTileJSON = {    
+    var osmTileJSON = {
 		"tilejson": "2.0.0"
 		, "name": "OpenStreetMap"
 		, "description": "A free editable map of the whole world."
@@ -24,9 +24,9 @@
 		, "attribution": "&copy; OpenStreetMap contributors, CC-BY-SA"
 		, "scheme": "xyz"
 		, "tiles": [
-            "http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
-            "http://b.tile.openstreetmap.org/${z}/${x}/${y}png",
-            "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
+            "http://a.tile.openstreetmap.org/${z}/${x}/${y}.png"
+            , "http://b.tile.openstreetmap.org/${z}/${x}/${y}png"
+            , "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
 		]
 		, "minzoom": 0
 		, "maxzoom": 18
@@ -37,17 +37,20 @@
 	var formControl = new L.Control.Form({
 		name: { type: "text", label: "Name", value: "pelle"},
 		passw: { type: "textarea", label: "Password" },
-		age: { type: "select", label: "Age", value: 7, options: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15] }
-	}, { 
-		header: "Form!" 
+		date: { type:"date", label: "Date"},
+		age: { type: "select"
+			   , label: "Age"
+			   , value: 7
+			   , options: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15] }
 	});
 	formControl.on('submit', function(e){
-		console.log(e.data.name);
-		console.log(e.data.passw);
+		console.log(e.name);
+		console.log(e.passw);
+		console.log(e.date);
 	});
 
     var map = L.TileJSON.createMap('map', osmTileJSON);
-	map.addControl(formControl); 
+	map.addControl(formControl);
 
 	//// Setup DOM
 
@@ -121,8 +124,8 @@
 				content += "<dd>&nbsp;" + val + "</dd>";
 			}
 			if(content !== ""){
-				layer.bindPopup("<dl class=\"dl-horizontal\">" 
-								+ content 
+				layer.bindPopup("<dl class=\"dl-horizontal\">"
+								+ content
 								+ "</dl>");
 			} else {
 				setClickable(layer, false);
@@ -164,12 +167,14 @@
 			err && err(textStatus, error.message);
 		});
     }
-	
+
 	function addGeojson(baseUrl, data, cb){
 		if(validateCRS(data.crs)){
 			createSource(baseUrl, data.crs, function(src){
 				geojson.addData(data, function(lat, lng){
-					var p = Proj4js.transform(src, Proj4js.WGS84, {x: lat, y: lng});
+					var p = Proj4js.transform(src
+											  , Proj4js.WGS84
+											  , {x: lat, y: lng});
 					return new L.LatLng(p.y, p.x, true);
 				});
 				cb && cb();
@@ -185,20 +190,24 @@
 	function createSource(baseUrl, crs, cb){
 		switch(crs.type){
 		// Standard GeoJSON
-		case 'name': return new Proj4js.Proj(crs.properties.name, cb);
-		case 'link': 
+		case 'name':
+			return new Proj4js.Proj(crs.properties.name, cb);
+		case 'link':
 			return projFromLink( absoluteUrl(baseUrl, crs.properties.href)
 								 , crs.properties.type
 								 , cb);
 		// Non-standard GeoServer behaviour
-		case 'EPSG': return new Proj4js.Proj('EPSG:' + crs.properties.code, cb);
+		case 'EPSG':
+			return new Proj4js.Proj('EPSG:' + crs.properties.code, cb);
+		default:
+			return undefined;
 		}
 	}
 
 	function absoluteUrl(baseUrl, href){
 		return new URI(href)
 			.resolve(new URI(baseUrl))
-			.toString()
+			.toString();
 	}
 
 	function projFromLink(url, type, cb){
@@ -217,7 +226,8 @@
 				return new Proj4js.Proj(def, cb);
 			}
 		}).error(function(){
-			throw "Couldn't fetch proj definition (" + type + ") from [" + href + "]";
+			throw "Couldn't fetch proj definition ("
+				+ type + ") from [" + href + "]";
 		});
 	}
 
@@ -226,8 +236,8 @@
 			return false;
 		}
 
-		if(  typeof(crs)            !== "object" 
-		  || typeof(crs.type)       !== "string" 
+		if(  typeof(crs)            !== "object"
+		  || typeof(crs.type)       !== "string"
 		  || typeof(crs.properties) !== "object" ){
 			throw "Malformed CRS object";
 		}
@@ -235,7 +245,7 @@
 		switch(crs.type){
 
 		// Standard GeoJSON
-		case 'name': 
+		case 'name':
 			if(  typeof(crs.properties.type) !== "string" ){
 				throw "Malformed CRS object";
 			}
@@ -243,17 +253,20 @@
 		case 'link':
 			var type = crs.properties.type.toLowerCase();
 			if(!(type === "proj4" || type === "proj4js" ||  /wkt/.test(type))){
-				throw "Malformed CRS object (CRS link type '" + crs.properties.type +"' not supported!";
+				throw "Malformed CRS object (CRS link type '"
+					+ crs.properties.type
+					+ "' not supported!";
 			}
 			break;
 
 		// Non-standard GeoServer behaviour
 		case 'EPSG': break;
-			
+
 		default:
-			throw "Malformed CRS object (CRS type '" + crs.type  + "' not supported)";
+			throw "Malformed CRS object (CRS type '"
+				+ crs.type
+				+ "' not supported)";
 		}
 		return true;
 	}
 })();
-

@@ -5,8 +5,10 @@
     <title>GeoJSON Viewer</title>
     <link rel="stylesheet" href="lib/leaflet-0.4.2-patched/leaflet.css" />
     <link rel="stylesheet" href="lib/Leaflet.zoomslider/L.Control.Zoomslider.css" />
-    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" href="L.Control.Form.css" />
+
+    <!-- <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" /> -->
+    <!-- <link rel="stylesheet" href="lib/bootstrap/css/bootstrap-responsive.min.css" /> -->
     <link rel="stylesheet" href="style.css" />
     <!--[if lt IE 9]>
       <link rel="stylesheet" href="lib/leaflet-0.4.2-patched/leaflet.ie.css"/>
@@ -15,33 +17,33 @@
     <![endif]-->
   </head>
   <body>
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-	  <div class="span3">
-            <a class="brand" href="#">GeoJSON Viewer</a>
-	  </div>
-	  <div class="navbar-search input-append input-prepend">
-	    <span class="add-on">http://</span><input id="url-entry" type="text" class="search-query span5" placeholder="GeoJSON URL"><button id="url-entry-button" class="btn btn-primary" type="button">Fetch!</button>
-          </div>
-	  <span id="spinner"></span>
-	</div>
-      </div>
-    </div>
+    <!-- <div class="navbar navbar-fixed-top"> -->
+    <!--   <div class="navbar-inner"> -->
+    <!--     <div class="container"> -->
+	<!-- 	  <div class="span3"> -->
+    <!--         <a class="brand" href="#">GeoJSON Viewer</a> -->
+	<!-- 	  </div> -->
+	<!-- 	  <div class="navbar-search input-append input-prepend"> -->
+	<!-- 		<span class="add-on">http://</span><input id="url-entry" type="text" class="search-query span5" placeholder="GeoJSON URL"><button id="url-entry-button" class="btn btn-primary" type="button">Fetch!</button> -->
+    <!--       </div> -->
+	<!-- 	  <span id="spinner"></span> -->
+	<!-- 	</div> -->
+    <!--   </div> -->
+    <!-- </div> -->
 
     <div id="map"></div>
 
-    <div class="modal modal-form hide" id="error-modal">
-      <div class="alert alert-error">
-	<a class="close" data-dismiss="modal" href="#">×</a>
-	<h4 class="alert-heading" id="error-modal-header">Error!</h4>
-	<p id="error-modal-message"></p>
-      </div>
-    </div>
+    <!-- <div class="modal modal-form hide" id="error-modal"> -->
+    <!--   <div class="alert alert-error"> -->
+	<!-- 	<a class="close" data-dismiss="modal" href="#">×</a> -->
+	<!-- 	<h4 class="alert-heading" id="error-modal-header">Error!</h4> -->
+	<!-- 	<p id="error-modal-message"></p> -->
+    <!--   </div> -->
+    <!-- </div> -->
 
     <!-- SCRIPTS --> 
     <script src="lib/jquery-1.7.2.js"></script>
-    <script src="lib/bootstrap/js/bootstrap.js"></script>
+    <!-- <script src="lib/bootstrap/js/bootstrap.js"></script> -->
     <script src="lib/leaflet-0.4.2-patched/leaflet-src.js"></script>
     <script src="lib/Leaflet.zoomslider/L.Control.Zoomslider.js"></script>
     <script src="lib/leaflet-tilejson.js"></script>

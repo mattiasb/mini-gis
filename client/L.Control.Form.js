@@ -10,10 +10,10 @@ L.Control.Form = L.Control.extend({
 	includes: L.Mixin.Events,
 
 	options: {
-		position: 'topright',
-		showLabels: false,
-		submitLabel: "Ok",
-		header: undefined
+		position: 'topright'
+		, showLabels: false
+		, submitLabel: "Submit"
+		, header: undefined
 	},
 
 	initialize: function(formDef, options){
@@ -29,9 +29,6 @@ L.Control.Form = L.Control.extend({
 	_initLayout: function(){
 		var className = 'leaflet-control-form'
 		,   container = L.DomUtil.create('div', className);
-
-		this._labelClassName = className + '-label'
-			+ (this.options.showLabels ? '' : ' hidden');
 
 		if (!L.Browser.touch) {
 			L.DomEvent.disableClickPropagation(container);
@@ -62,18 +59,23 @@ L.Control.Form = L.Control.extend({
 			this._fields.push(field);
 		}
 
-		this._createField("submit"
-						  , {type: "submit", value: this.options.submitLabel}
-						  , fieldset);
+		this._createField(
+			"submit"
+			, { type: "submit", value: this.options.submitLabel }
+			, fieldset);
 
 		L.DomEvent.on(form, 'submit', this._submit, this);
 		return form;
 	},
 
 	_createLabel: function(name, label, container){
-		var label = L.DomUtil.create('label', this._labelClassName, container);
-		label.setAttribute('for', name);
-		label.appendChild(document.createTextNode(label+':'));
+		var elem = L.DomUtil.create(
+			'label'
+			, this.options.showLabels ? '': 'hidden'
+			, container);
+		elem.setAttribute('for', name);
+		elem.appendChild(document.createTextNode(elem+':'));
+		return elem;
 	},
 
 	_createField: function(name, def, container){
@@ -121,7 +123,10 @@ L.Control.Form = L.Control.extend({
 			data[field.name] = field.value;
 		}
 
-		this.fire('submit', { data:data } );
+		this.fire('submit', data );
+
+		this._form.blur();
+
 		return false;
 	}
 });

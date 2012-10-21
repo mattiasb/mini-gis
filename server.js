@@ -21,13 +21,14 @@ app.post('/proxy/', function(req, res, next){
 		};
 		if(req.body.method === "POST"){
 			// TODO: Support for other body types
-			options.json = req.body.body
+			options.json = req.body.body;
 		}
 		var response = request(options);
 		response.on('error', function(e) { 
-			helpers.handleError(res, e.message);
-		});
+						helpers.handleError(res, e.message);
+					});
 		response.pipe(res);
+		
 	}
 });
 
