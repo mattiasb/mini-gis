@@ -34,19 +34,13 @@
 		, "center": [ 0, 25, 2 ]
     };
 
-	var formControl = new L.Control.Form({
-		name: { type: "text", label: "Name", value: "pelle"},
-		passw: { type: "textarea", label: "Password" },
-		date: { type:"date", label: "Date"},
-		age: { type: "select"
-			   , label: "Age"
-			   , value: 7
-			   , options: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15] }
-	});
-	formControl.on('submit', function(e){
-		console.log(e.name);
-		console.log(e.passw);
-		console.log(e.date);
+	var formControl = L.control.form({
+		geojson: { type: "textarea", label:"GeoJSON"}
+	}).on('submit', function(e){
+		addGeojson("", JSON.parse(e.geojson), function(){
+			map.fitBounds(geojson.getBounds());
+			map.addLayer(geojson);
+		});
 	});
 
     var map = L.TileJSON.createMap('map', osmTileJSON);
@@ -78,7 +72,7 @@
     $urlEntryButton.click(fetch);
 
     var $errorModal = $('#error-modal');
-    $errorModal.modal({show: false});
+    //$errorModal.modal({show: false});
 
     var $errorModalMessage = $('#error-modal-message');
     var $errorModalHeader = $('#error-modal-header');

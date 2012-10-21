@@ -6,6 +6,12 @@
 	  - setting the forms initial state to expanded
   * Style the form
 */
+
+
+L.control.form = function(def, options){
+	return new L.Control.Form(def, options);
+};
+
 L.Control.Form = L.Control.extend({
 	includes: L.Mixin.Events,
 
