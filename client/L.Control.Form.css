@@ -16,7 +16,8 @@
 
 .leaflet-control-form input, 
 .leaflet-control-form select, 
-.leaflet-control-form textarea {
+.leaflet-control-form textarea,
+.leaflet-control-form button {
     display: block;
 
     border:0px;
@@ -30,17 +31,19 @@
 
 .leaflet-control-form input:focus, 
 .leaflet-control-form select:focus, 
-.leaflet-control-form textarea:focus {
+.leaflet-control-form textarea:focus,
+.leaflet-control-form button:focus {
     background-color: #fff;
     outline: none;
-
 }
 
-.leaflet-control-form input[type=submit] {
+.leaflet-control-form input[type=submit],
+.leaflet-control-form button {
     margin-bottom: 0px;
 }
 
-.leaflet-control-form input[type=submit]:hover{
+.leaflet-control-form input[type=submit]:hover, 
+.leaflet-control-form button:hover {
     background-color: #fff;   
     cursor: pointer;
 
